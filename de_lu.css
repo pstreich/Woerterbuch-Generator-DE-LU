@@ -1,0 +1,49 @@
+button{
+	font-size:8px;
+}
+
+#btn1{
+	float:left;
+	width: 50%;
+}
+
+#btn2{
+	float:right;
+	width: 50%;
+}
+
+mark{
+    background: orange;
+    color: black;
+}
+
+table {
+    border-collapse: collapse;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+.key_ger, .key_lux {
+    /*border: 1px solid black;*/
+	text-transform: capitalize;
+	background-color: #f2f2f2;
+}
+.table_ger{
+	float:left;
+}
+
+.key_ger.selected + .value_ger, .key_lux.selected + .value_lux{
+	display: block;
+	background-color: #ddd;
+}
+.value_ger, .value_lux, .key_ger_token {
+	display: none;
+}
+
+td.vorkommen, td.vorschlag, td.vorkommen_lux,td.vorschlag_lux {
+	display:none;
+}
+th.vorkommen.selected + td.vorkommen, th.vorschlag.selected + td.vorschlag, th.vorkommen_lux.selected + td.vorkommen_lux, th.vorschlag_lux.selected + td.vorschlag_lux{
+	display: block;
+}
