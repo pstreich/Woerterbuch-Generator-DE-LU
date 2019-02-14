@@ -5,6 +5,7 @@ from collections import defaultdict
 from nltk.tokenize import WhitespaceTokenizer, sent_tokenize
 from nltk.probability import FreqDist
 from yattag import Doc, indent
+import pickle
 
 
 
@@ -96,7 +97,7 @@ def display_article(data_ger,data_lux):
                                         with tag('td', klass="vorkommen"):
                                             with tag('p', klass="fdist_ger"):
                                                 text("Kommt "+str(data_ger[d][1])+" Mal vor im Text")
-                                            for entry in data_ger[d][2:]:
+                                            for entry in data_ger[d][3:]:
                                                 with tag('p', klass="occur_ger"):
                                                     if (len(entry.split())>1):
                                                         text(entry)
@@ -104,7 +105,7 @@ def display_article(data_ger,data_lux):
                                     with tag ('th', klass="vorschlag"):
                                         text('Vorschlag anzeigen')
                                         with tag('td', klass="vorschlag", onclick="jump(event)"):
-                                            for entry in data_ger[d][2:]:
+                                            for entry in data_ger[d][3:]:
                                                 with tag('p', klass="vorschlag"):
                                                     if (len(entry.split())==1):
                                                         text(entry)
@@ -161,6 +162,9 @@ for word in lux_tokens:                                                 ## Itera
             lux_dict_value_list.append(entry)
     lux_dict[word]=lux_dict_value_list                                  ## Eigenschaftsliste wird dem Wort zugewiesen
 
+with open('lu_dict.pickle', 'wb') as handle:
+    pickle.dump(lux_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
 print("...füllt deutsches Wörterbuch")
 
 ##create german_dict with format key:Wort,value:list[POS-Tag,index_occurences]
@@ -179,6 +183,7 @@ with open('mmd_tagged.txt', encoding='utf-8') as fp:                    ## Ausga
         words[2]=words[2].lower()
         german_dict_value_list=[words[0]]                               ## Eigenschaftsliste (mit allen POS-Tags, werden  aber nicht verwendet)
         german_dict_value_list.append(ger_fdist[words[0].lower()])
+        german_dict_value_list.append(words[1])
         search_regex_ger=r"\b"+re.escape(words[0])+r"\b"
         for d in sorted(lux_dict):                                      ## Levensthein-Distanz Abfragen
             if(len(words[2]) <=2):
@@ -198,10 +203,12 @@ with open('mmd_tagged.txt', encoding='utf-8') as fp:                    ## Ausga
                 german_dict_value_list.append(entry)
         german_dict[words[2]]=german_dict_value_list                    ## Eigenschaftsliste wird dem Wort zugewiesen
 
+with open('de_dict.pickle', 'wb') as handle:
+    pickle.dump(german_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 print("...generiert html Ausgabe")
 
-f=open('de_lu.html','x', encoding='utf-8')                              ## Erstellt HTML Datei
+f=open('de_lu3.html','x', encoding='utf-8')                              ## Erstellt HTML Datei
 f.write(display_article(german_dict,lux_dict))                          ## Schreibt HTML Inhalt
 
 print("...Programm ist beendet")
