@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:svg="http://www.w3.org/2000/svg"
+  xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>dictionary Generator DE-LU</title>
+        <author>Pierre Streicher</author>
+      </titleStmt>
+      <publicationStmt>
+        <p>for use by whoever wants it</p>
+      </publicationStmt>
+      <notesStmt>
+        <note type="ns">http://www.example.org/ns/nonTEI</note>
+      </notesStmt>
+      <sourceDesc>
+        <p>created on Monday 11th Febraury 2019 17:00:00 PM</p>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <front>
+      <divGen type="toc"/>
+      <titlePage>
+        <docTitle>
+          <titlePart type="main">Data model Automatic Generation of a German-Luxembourgish
+            Dictionary</titlePart>
+          <titlePart type="sub">Documentation</titlePart>
+        </docTitle>
+        <docAuthor>Pierre Streicher</docAuthor>
+        <docDate>2019</docDate>
+      </titlePage>
+    </front>
+    <body>
+      <div>
+        <head>Automatic Generation Of A German-Luxembourgish(DE-LU) Dictionary</head>
+        <p>The goal of this project is to(1) develop a program that will automatically generate a
+          dictionary from a German text and a corresponding Luxembourgish translation. The created
+          dictionary is then(2) annotated with metainformation using the TEI standard. The metadata
+          enrichment process and decision making of its structure will be documented here. Ideally,
+          the final system should provide (computer) linguistic added value by providing the end
+          user with assistance in investigating linguistic features.</p>
+      </div>
+      <div>
+        <head>Ressources used</head>
+        <p>The ultimate goal is that users use any German-Luxembourgish text they want. After the
+          dictionary is generated it will automatically be annotated with the conceived TEI
+          structure. In this case the text used is the fairy tale 'Max und Moritz' written by
+          Wilhelm Busch(German original) and its Luxembourgish translation by Josy Christen(see <ref
+            target="https://www.josychristen.lu/kannersaachen/wilhelm-busch-op-l%C3%ABtzebuergesch/de-max-an-de-moritz/"
+            >link</ref>) </p>
+      </div>
+      <div>
+        <head>Dicitonary generation in python(1)</head>
+        <p>In python two objects from the python datatype 'dictionary' are created, one contains all
+          the information about the German text and the other one contains all the information about
+          the Luxembourgish text. The structure for the German dictionary object in python is:
+          ger_dict={key,value}, where ger_dict={lemma,[variant, frequency, note[], sense[]}. The
+          structure of the Luxembourgish dictionary object in python is: lux_dict={key,value}, where
+          lux_dict={variant, [frequency, note[]]). The key variable contains one string, whereas the
+          value variable contains a list of strings, lists or integers. In a first step both texts
+          are tokenized by words and sentences. In the case of the German text a part-of-speech
+          tagger parses the text and besides tokenizing the text, it also generates the lemma
+          information from the corresponding words(variants). In the case of the German dictionary
+          the lemma is used as the key variable, in the Luxembourgish one the variant is used as the
+          key. For both dictionaries the frequency and note information are gathered for every word.
+          The frequency determines the number of times a given word occurs in a text, whereas the
+          note gives back all the sentences where a given word occurs.</p>
+        <p>The translation mechanism manifests itself in the sense variable, which is only present
+          in the German dictionary. In the last step of the generation, each German word iterates
+          over all the Luxembourgish words and, based on the length of a given German word, the
+          Levensthein distance is calculated for a given Luxembourgish word. If there is a match,
+          the corresponding Luxembourgish word is stored in the sense variable</p>
+      </div>
+      <div>
+        <head>Modelling the TEI structure(2)</head>
+        <p>The idea is to represent the structure of the dictionary, which was generated in (1), the
+          same way in the TEI structure than it is stored in the python object. Moreover the TEI
+          file should ideally cover all the words from both dictionaries. The translation mechanic
+          does not cover all the words, it only gives back a Luxembourgish translation candidate for
+          a given German word if the Levenshtein method returns a match. Firstly, those translation
+          candidates do not necessarily mean a correct translation. Secondly, it is possible that a)
+          there is no translation candidate for a given German word or b)a given Luxembourgish word
+          does not appear at all as a translation candidate. This means, that representing the
+          structure from only the German dictionary does not cover all the words. Whereas the
+          structure of the Luxembourgish dictionary does not contain any German translation
+          candidates. The current implementation therefore produces two TEI files. In the first
+          one(de_lu_tei) the structure follows the German dictionary, which contains all possible
+          translation candidates. The second one(lu_de_tei) follows the structure of the
+          Luxembourgish dictionary and only contains the Luxembourgish words. </p>
+      </div>
+      <div>
+        <head>Instructions for use</head>
+        <p>The file 'de_lu.py' contains the logic for generating dictionaries based on the
+          texts('mmd.txt','mml.txt'). It produces a html file where the generated dictionary can be
+          dynamically browsed. It also produces two serializations of the
+          dictionaries('de_dict.pickle','lu_dict.pickle') which are later used to generate the TEI
+          files. The file 'de_lu_to_tei' deserializes both dictionaries and after parsing it, it
+          produces the enveloping TEI structure with the output file 'de_dict_tei.xml' for the
+          German version and 'lu_dict_tei.xml' for the Luxembourgish version</p>
+      </div>
+
+
+    </body>
+    <back>
+      <div>
+        <head>TEI-Specifications</head>
+        <p>This TEI Customization&#xD; uses the modules core, tei, header, textstructure and
+          dictionaries.</p>
+
+        <schemaSpec ident="de_lu" docLang="en" prefix="tei_" xml:lang="en">
+          <moduleRef key="core" except=""/>
+          <moduleRef key="tei" except=""/>
+          <moduleRef key="header" except=""/>
+          <moduleRef key="textstructure" except=""/>
+          <moduleRef key="dictionaries" except=""/>
+          <classSpec ident="att.global" module="tei" mode="change" type="atts">
+            <attList>
+              <attDef ident="xml:lang" mode="change">
+                <desc>The attribute <att>xml:lang</att> is used to specify the language used in the
+                  source.</desc>
+                <valList type="closed" mode="replace">
+                  <valItem ident="de">
+                    <desc>Word given in German language</desc>
+                  </valItem>
+                  <valItem ident="lu">
+                    <desc>Word given in Luxembourgish language</desc>
+                  </valItem>
+                </valList>
+              </attDef>
+              <attDef ident="xml:id" mode="change">
+                <desc>The attribute <att>xml:id</att> is used to specify the numerical order of the
+                  elements</desc>
+              </attDef>
+            </attList>
+          </classSpec>
+          <elementSpec ident="entry" module="dictionaries" mode="change">
+            <desc>This element indicates a new entry in the dictionary</desc>
+          </elementSpec>
+          <elementSpec ident="form" module="dictionaries" mode="change">
+            <desc>This element indicates a new grammatical form in the entry element</desc>
+          </elementSpec>
+          <elementSpec ident="orth" module="dictionaries" mode="change">
+            <desc>This element indicates a new orthographic information/unit in the form
+              element</desc>
+          </elementSpec>
+          <elementSpec ident="measure" module="core" mode="change">
+            <desc>This element indicates a new measurement information/unit in the entry
+              element</desc>
+          </elementSpec>
+          <elementSpec ident="num" module="core" mode="change">
+            <desc>This element indicates a new numerical information/unit in the measure
+              element</desc>
+          </elementSpec>
+          <elementSpec ident="note" module="core" mode="change">
+            <desc>This element indicates a new note information/unit in the entry element</desc>
+          </elementSpec>
+          <elementSpec ident="gramGrp" module="dictionaries" mode="change">
+            <desc>This element indicates a new grammatical group information/unit in the entry
+              element</desc>
+          </elementSpec>
+          <elementSpec ident="pos" module="dictionaries" mode="change">
+            <desc>This element indicates a new grammatical part-of-speech information/unit in the
+              gramGrp element</desc>
+          </elementSpec>
+          <elementSpec ident="sense" module="dictionaries" mode="change">
+            <desc>This element indicates a new translation meaning information/unit in the entry
+              element</desc>
+          </elementSpec>
+          <elementSpec ident="def" module="dictionaries" mode="change">
+            <desc>This element indicates a new concrete translation meaning definition
+              information/unit in the sense element</desc>
+          </elementSpec>
+        </schemaSpec>
+      </div>
+    </back>
+  </text>
+</TEI>

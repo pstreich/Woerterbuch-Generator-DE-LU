@@ -7,7 +7,7 @@ def de_dict_to_tei(data_ger,data_lux):
     counter_entry_de = 0
     doc, tag, text = Doc().tagtext()
     doc.asis('<?xml version="1.0" encoding="UTF-8"?>')
-    doc.asis('<?xml-model href="beo_en_de.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>')
+    doc.asis('<?xml-model href="de_lu.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>')
     doc.asis('<TEI xmlns="http://www.tei-c.org/ns/1.0">')
     with tag('teiHeader'):
         with tag('fileDesc'):
@@ -69,7 +69,7 @@ def lu_dict_to_tei(data_ger,data_lux):
     counter_entry_lu = 0
     doc, tag, text = Doc().tagtext()
     doc.asis('<?xml version="1.0" encoding="UTF-8"?>')
-    doc.asis('<?xml-model href="beo_en_de.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>')
+    doc.asis('<?xml-model href="de_lu.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>')
     doc.asis('<TEI xmlns="http://www.tei-c.org/ns/1.0">')
     with tag('teiHeader'):
         with tag('fileDesc'):
